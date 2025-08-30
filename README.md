@@ -410,3 +410,48 @@ document.getElementById('payBtn').onclick = function(){
 </script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+import express from "express";
+import cors from "cors";
+import dotenv from "dotenv";
+import Groq from "groq-sdk";
+
+dotenv.config();
+
+const app = express();
+const port = process.env.PORT || 3000;
+
+app.use(cors());
+app.use(express.json());
+
+const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+
+app.post("/chat", async (req, res) => {
+  try {
+    const userMessage = req.body.message || "Hello from user!";
+
+    const completion = await groq.chat.completions.create({
+      model: "llama-3.1-8b-instant",
+      messages: [{ role: "user", content: userMessage }],
+    });
+
+    const reply = completion.choices[0].message.content;
+    res.json({ reply });
+  } catch (error) {
+    console.error("Groq API error:", error);
+    res.status(500).json({ reply: "⚠️ Error connecting to AI provider." });
+  }
+});
+
+app.listen(port, () => {
+  console.log(`✅ Backend running at http://localhost:${port}`);
+});
