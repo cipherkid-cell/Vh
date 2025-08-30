@@ -517,3 +517,102 @@ app.listen(port, () => {
   <script src="chatbot-widget.js"></script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+(function () {
+  const config = window.CHATBOT_CONFIG || {};
+  const relayUrl = config.RELAY_URL;
+
+  // Floating button
+  const button = document.createElement("button");
+  button.innerText = "💬 Chat";
+  button.style.position = "fixed";
+  button.style.bottom = "20px";
+  button.style.right = "20px";
+  button.style.padding = "10px 20px";
+  button.style.borderRadius = "20px";
+  button.style.background = "#007bff";
+  button.style.color = "#fff";
+  button.style.border = "none";
+  button.style.cursor = "pointer";
+  document.body.appendChild(button);
+
+  // Chat window
+  const chatWindow = document.createElement("div");
+  chatWindow.style.position = "fixed";
+  chatWindow.style.bottom = "70px";
+  chatWindow.style.right = "20px";
+  chatWindow.style.width = "300px";
+  chatWindow.style.height = "400px";
+  chatWindow.style.background = "#fff";
+  chatWindow.style.border = "1px solid #ccc";
+  chatWindow.style.display = "none";
+  chatWindow.style.flexDirection = "column";
+  chatWindow.style.borderRadius = "10px";
+  chatWindow.style.overflow = "hidden";
+  document.body.appendChild(chatWindow);
+
+  const messagesDiv = document.createElement("div");
+  messagesDiv.style.flex = "1";
+  messagesDiv.style.padding = "10px";
+  messagesDiv.style.overflowY = "auto";
+  chatWindow.appendChild(messagesDiv);
+
+  const inputDiv = document.createElement("div");
+  inputDiv.style.display = "flex";
+  chatWindow.appendChild(inputDiv);
+
+  const input = document.createElement("input");
+  input.type = "text";
+  input.placeholder = "Type a message...";
+  input.style.flex = "1";
+  input.style.padding = "10px";
+  inputDiv.appendChild(input);
+
+  const sendBtn = document.createElement("button");
+  sendBtn.innerText = "Send";
+  sendBtn.style.padding = "10px";
+  inputDiv.appendChild(sendBtn);
+
+  button.addEventListener("click", () => {
+    chatWindow.style.display =
+      chatWindow.style.display === "none" ? "flex" : "none";
+  });
+
+  function addMessage(text, from) {
+    const msg = document.createElement("div");
+    msg.innerText = (from === "user" ? "🧑: " : "🤖: ") + text;
+    messagesDiv.appendChild(msg);
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+  }
+
+  async function sendMessage() {
+    const text = input.value.trim();
+    if (!text) return;
+    addMessage(text, "user");
+    input.value = "";
+
+    try {
+      const res = await fetch(relayUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: text })
+      });
+      const data = await res.json();
+      addMessage(data.reply, "bot");
+    } catch (err) {
+      addMessage("⚠️ Error connecting to server", "bot");
+    }
+  }
+
+  sendBtn.addEventListener("click", sendMessage);
+  input.addEventListener("keypress", (e) => {
+    if (e.key === "Enter") sendMessage();
+  });
+})();
