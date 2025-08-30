@@ -481,3 +481,39 @@ app.listen(port, () => {
     "groq-sdk": "^0.30.0"
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>My Business Chatbot</title>
+</head>
+<body>
+  <h1>Welcome to My Website</h1>
+  <p>Chat with our AI assistant!</p>
+
+  <!-- Chatbot -->
+  <script>
+    window.CHATBOT_CONFIG = {
+      RELAY_URL: "http://localhost:3000/chat", // update to deployed backend later
+      COMPANY_NAME: "My Business"
+    };
+  </script>
+  <script src="chatbot-widget.js"></script>
+</body>
+</html>
