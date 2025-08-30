@@ -455,3 +455,29 @@ app.post("/chat", async (req, res) => {
 app.listen(port, () => {
   console.log(`✅ Backend running at http://localhost:${port}`);
 });
+
+
+
+
+
+
+
+
+
+
+
+{
+  "name": "chatbot-backend",
+  "version": "1.0.0",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0",
+    "groq-sdk": "^0.30.0"
+  }
+}
