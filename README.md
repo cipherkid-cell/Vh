@@ -616,3 +616,42 @@ app.listen(port, () => {
     if (e.key === "Enter") sendMessage();
   });
 })();
+
+
+
+
+
+
+
+import Groq from "groq-sdk";
+
+const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+
+export default async function handler(req, res) {
+  if (req.method === "OPTIONS") {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+    return res.status(200).end();
+  }
+
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Method not allowed" });
+  }
+
+  try {
+    const body = req.body || {};
+    const userMessage = body.message || "Hello from user!";
+
+    const completion = await groq.chat.completions.create({
+      model: "llama-3.1-8b-instant",
+      messages: [{ role: "user", content: userMessage }],
+    });
+
+    const reply = completion.choices[0].message.content;
+    return res.status(200).json({ reply });
+  } catch (err) {
+    console.error("Groq error:", err);
+    return res.status(500).json({ reply: "⚠️ Error connecting to AI provider." });
+  }
+}
